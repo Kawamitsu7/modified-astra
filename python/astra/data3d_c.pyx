@@ -141,6 +141,7 @@ def create(datatype,geometry,data=None, link=False):
                 pDataObject3D = <CFloat32Data3D * > new CFloat32ProjectionData3DMemory(ppGeometry, pCustom)
             elif isinstance(data, GPULink):
                 IF HAVE_CUDA==True:
+                    #print("pass here")
                     s = geom_size(geometry)
                     hnd = wrapHandle(<float*>PyLong_AsVoidPtr(data.ptr), data.x, data.y, data.z, data.pitch/4)
                     pDataObject3D = <CFloat32Data3D * > new CFloat32ProjectionData3DGPU(ppGeometry, hnd)
