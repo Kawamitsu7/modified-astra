@@ -118,6 +118,10 @@ def create(datatype,geometry,data=None, link=False):
         del cfg
         del pGeometry
     elif datatype == '-sino' or datatype == '-proj3d' or datatype == '-sinocone':
+
+        # [edited] 画像データをGPUに送るための関数をトレース中
+        print("pass here")
+
         cfg = utils.dictToConfig(six.b('ProjectionGeometry'), geometry)
         tpe = wrap_from_bytes(cfg.self.getAttribute(six.b('type')))
         if (tpe == "parallel3d"):
@@ -141,7 +145,6 @@ def create(datatype,geometry,data=None, link=False):
                 pDataObject3D = <CFloat32Data3D * > new CFloat32ProjectionData3DMemory(ppGeometry, pCustom)
             elif isinstance(data, GPULink):
                 IF HAVE_CUDA==True:
-                    #print("pass here")
                     s = geom_size(geometry)
                     hnd = wrapHandle(<float*>PyLong_AsVoidPtr(data.ptr), data.x, data.y, data.z, data.pitch/4)
                     pDataObject3D = <CFloat32Data3D * > new CFloat32ProjectionData3DGPU(ppGeometry, hnd)
