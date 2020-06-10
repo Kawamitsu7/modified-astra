@@ -46,6 +46,9 @@ along with the ASTRA Toolbox. If not, see <http://www.gnu.org/licenses/>.
 
 #include <cuda.h>
 
+// additional include
+#include <time.h>
+
 namespace astraCUDA3d {
 
 static const unsigned int g_anglesPerWeightBlock = 16;
@@ -284,6 +287,9 @@ bool FDK_Filter(cudaPitchedPtr D_projData,
 
 	bool ok = true;
 
+	// [edited]measure time
+	clock_t start = clock();
+
 	for (int v = 0; v < dims.iProjV; ++v) {
 
 		ok = astraCUDA::runCudaFFT(dims.iProjAngles, D_sinoData, projPitch,
@@ -302,6 +308,19 @@ bool FDK_Filter(cudaPitchedPtr D_projData,
 
 		D_sinoData += (dims.iProjAngles * projPitch);
 	}
+
+	// [edited]
+	// end measuring time
+	clock_t end = clock();
+	// calc time
+	double time = static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000.0;
+	printf("<fdk>sum time : %lf[ms]\n", time);
+	// calc time of once operation
+	long long int loop = dims.iProjAngles * dims.iProjV;
+	printf("<fdk>loop times : %lld[times]\n", loop);
+	double once = time / (long double)loop;
+	printf("<fdk>once operation's time(ave.) : %lf[ms]\n", once);
+	// [end edited]
 
 	astraCUDA::freeComplexOnDevice(D_sinoFFT);
 	astraCUDA::freeComplexOnDevice(D_filter);

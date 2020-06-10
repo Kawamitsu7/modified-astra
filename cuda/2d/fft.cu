@@ -37,6 +37,8 @@ along with the ASTRA Toolbox. If not, see <http://www.gnu.org/licenses/>.
 #include <cufft.h>
 #include <cuda.h>
 
+// additional include
+#include <windows.h>
 
 using namespace astra;
 
@@ -220,13 +222,34 @@ bool runCudaFFT(int _iProjectionCount, const float * _pfDevRealSource,
 	SAFE_CALL(cudaMalloc((void **)&pfDevRealFFTSource, bufferMemSize));
 	SAFE_CALL(cudaMemset(pfDevRealFFTSource, 0, bufferMemSize));
 
+	// [edited]
+	// get freq of QueryPerformanceCounter()
+	LARGE_INTEGER freq;
+	QueryPerformanceFrequency(&freq);
+
+	LARGE_INTEGER start, end;
+	double sum;
+	sum = 0.0;
+	// [end edited]
+
 	for(int iProjectionIndex = 0; iProjectionIndex < _iProjectionCount; iProjectionIndex++)
 	{
 		const float * pfSourceLocation = _pfDevRealSource + iProjectionIndex * _iSourcePitch;
 		float * pfTargetLocation = pfDevRealFFTSource + iProjectionIndex * _iFFTRealDetectorCount;
 
+		// [edited] measure time
+		QueryPerformanceCounter(&start);
+
 		SAFE_CALL(cudaMemcpy(pfTargetLocation, pfSourceLocation, sizeof(float) * _iProjDets, cudaMemcpyDeviceToDevice));
+		
+		// [edited] end measuring time
+		QueryPerformanceCounter(&end);
+		// add time
+		sum += static_cast<double>(end.QuadPart - start.QuadPart) * 1000.0 / freq.QuadPart;
 	}
+
+	// [edited] print ave. time
+	printf("<fft>\tMemcpy time(ave.):\t%lf\t[ms]\n", sum / _iProjectionCount);
 
 	bool bResult = invokeCudaFFT(_iProjectionCount, _iFFTRealDetectorCount,
 	                             pfDevRealFFTSource, _pDevTargetComplex);

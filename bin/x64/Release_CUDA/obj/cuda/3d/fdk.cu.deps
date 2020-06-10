@@ -304,8 +304,8 @@ c:\program files\nvidia gpu computing toolkit\cuda\v8.0\include\vector_functions
 c:\program files\nvidia gpu computing toolkit\cuda\v8.0\include\device_launch_parameters.h
 c:\program files\nvidia gpu computing toolkit\cuda\v8.0\include\vector_types.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include\cuda.h
-c:\astra-1.9.0.dev11\astra-1.9.0.dev11\include\astra\cuda\3d\dims3d.h
-c:\astra-1.9.0.dev11\astra-1.9.0.dev11\include\astra\cuda\3d\../2d/util.h
+c:\astra-1.9.0.dev11\astra-1.9.0.dev11\modified-astra\include\astra\cuda\3d\dims3d.h
+c:\astra-1.9.0.dev11\astra-1.9.0.dev11\modified-astra\include\astra\cuda\3d\../2d/util.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include\driver_types.h
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\string
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\istream
@@ -389,7 +389,7 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\assert.h
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\iostream
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\fstream
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\math.h
-c:\astra-1.9.0.dev11\astra-1.9.0.dev11\include\astra\cuda\2d\dims.h
+c:\astra-1.9.0.dev11\astra-1.9.0.dev11\modified-astra\include\astra\cuda\2d\dims.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include\cufft.h
 c:\program files\nvidia gpu computing toolkit\cuda\v8.0\include\cuComplex.h
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\math.h
