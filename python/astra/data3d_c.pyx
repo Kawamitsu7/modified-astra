@@ -119,9 +119,6 @@ def create(datatype,geometry,data=None, link=False):
         del pGeometry
     elif datatype == '-sino' or datatype == '-proj3d' or datatype == '-sinocone':
 
-        # [edited] 画像データをGPUに送るための関数をトレース中
-        print("pass here")
-
         cfg = utils.dictToConfig(six.b('ProjectionGeometry'), geometry)
         tpe = wrap_from_bytes(cfg.self.getAttribute(six.b('type')))
         if (tpe == "parallel3d"):

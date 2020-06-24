@@ -1532,6 +1532,7 @@ static bool doJob(const CCompositeGeometryManager::TJobSet::const_iterator& iter
 				ok = astraCUDA3d::FDK(((CCompositeGeometryManager::CProjectionPart*)j.pInput.get())->pGeom, srcMem->hnd, ((CCompositeGeometryManager::CVolumePart*)j.pOutput.get())->pGeom, dstMem->hnd, j.FDKSettings.bShortScan, j.FDKSettings.pfFilter);
 				if (!ok) ASTRA_ERROR("Error performing sub-FDK");
 				ASTRA_DEBUG("CCompositeGeometryManager::doJobs: FDK done");
+
 			}
 		}
 		break;

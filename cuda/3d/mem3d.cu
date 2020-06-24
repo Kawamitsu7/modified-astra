@@ -160,6 +160,11 @@ bool copyToGPUMemory(const float *src, MemHandle3D dst, const SSubDimensions3D &
 
 	p.kind = cudaMemcpyHostToDevice;
 
+	// [edited] check
+	printf("pass\n");
+	printf("Copying %d x %d x %d to GPU", pos.subnx, pos.subny, pos.subnz);
+	printf("Offset %d,%d,%d", pos.subx, pos.suby, pos.subz);
+
 	cudaError_t err = cudaMemcpy3D(&p);
 
 	return err == cudaSuccess;
