@@ -230,6 +230,14 @@ bool runCudaFFT(int _iProjectionCount, const float * _pfDevRealSource,
 	LARGE_INTEGER start, end;
 	double sum;
 	sum = 0.0;
+
+	// GPU time
+	cudaEvent_t c_start, c_stop;
+	float milisec = 0.0;
+	double c_sum = 0.0;
+	cudaEventCreate(&c_start);
+	cudaEventCreate(&c_stop);
+
 	// [end edited]
 
 	for(int iProjectionIndex = 0; iProjectionIndex < _iProjectionCount; iProjectionIndex++)
@@ -239,17 +247,25 @@ bool runCudaFFT(int _iProjectionCount, const float * _pfDevRealSource,
 
 		// [edited] measure time
 		QueryPerformanceCounter(&start);
+		cudaEventRecord(c_start);
 
 		SAFE_CALL(cudaMemcpy(pfTargetLocation, pfSourceLocation, sizeof(float) * _iProjDets, cudaMemcpyDeviceToDevice));
 		
 		// [edited] end measuring time
 		QueryPerformanceCounter(&end);
+		cudaEventRecord(c_stop);
+		cudaEventSynchronize(c_stop);
+		cudaEventElapsedTime(&milisec, c_start, c_stop);
+
 		// add time
 		sum += static_cast<double>(end.QuadPart - start.QuadPart) * 1000.0 / freq.QuadPart;
+		c_sum += (double)milisec;
 	}
 
 	// [edited] print ave. time
-	printf("<fft>\tMemcpy time(ave.):\t%lf\t[ms]\n", sum / _iProjectionCount);
+	printf("<fft>\tMemcpy time(ave.)\tAPI:\t%lf\t[ms]\t/GPU:\t%lf\t[ms]\n", sum / _iProjectionCount, c_sum / _iProjectionCount);
+	cudaEventDestroy(c_start);
+	cudaEventDestroy(c_stop);
 
 	bool bResult = invokeCudaFFT(_iProjectionCount, _iFFTRealDetectorCount,
 	                             pfDevRealFFTSource, _pDevTargetComplex);

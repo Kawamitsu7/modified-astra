@@ -162,10 +162,28 @@ bool copyToGPUMemory(const float *src, MemHandle3D dst, const SSubDimensions3D &
 
 	// [edited] check
 	printf("pass\n");
-	printf("Copying %d x %d x %d to GPU", pos.subnx, pos.subny, pos.subnz);
-	printf("Offset %d,%d,%d", pos.subx, pos.suby, pos.subz);
+	printf("Copying %d x %d x %d to GPU/", pos.subnx, pos.subny, pos.subnz);
+	printf("Offset %d,%d,%d\n", pos.subx, pos.suby, pos.subz);
+
+	// [edited] create cuda event
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
+
+	cudaEventRecord(start); // [edited]
 
 	cudaError_t err = cudaMemcpy3D(&p);
+
+	cudaEventRecord(stop); // [edited]
+	cudaEventSynchronize(stop); // [edited]
+
+	// [edited] calc time in ms
+	float milisec = 0;
+	cudaEventElapsedTime(&milisec, start, stop);
+	printf("<mem3d.cu>H2D Memcpy : %lf[ms]\n", milisec);
+
+	cudaEventDestroy(start);
+	cudaEventDestroy(stop);
 
 	return err == cudaSuccess;
 }
