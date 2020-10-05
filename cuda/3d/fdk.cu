@@ -289,37 +289,54 @@ bool FDK_Filter(cudaPitchedPtr D_projData,
 
 	// [edited]measure time
 	clock_t start = clock();
+	double fft_time = 0,fil_time = 0,ifft_time = 0;	// [edited] add variables
 
 	for (int v = 0; v < dims.iProjV; ++v) {
 
+		clock_t period_s = clock();
 		ok = astraCUDA::runCudaFFT(dims.iProjAngles, D_sinoData, projPitch,
 		                dims.iProjU, iPaddedDetCount, iHalfFFTSize,
-		                D_sinoFFT);
+						D_sinoFFT);
+		clock_t period_f = clock();
+		fft_time += static_cast<double>(period_f - period_s)/ CLOCKS_PER_SEC * 1000.0;
 
 		if (!ok) break;
 
+		period_s = clock();
 		astraCUDA::applyFilter(dims.iProjAngles, iHalfFFTSize, D_sinoFFT, D_filter);
+		period_f = clock();
+		fil_time += static_cast<double>(period_f - period_s)/ CLOCKS_PER_SEC * 1000.0;
 
-
+		period_s = clock();
 		ok = astraCUDA::runCudaIFFT(dims.iProjAngles, D_sinoFFT, D_sinoData, projPitch,
-		                 dims.iProjU, iPaddedDetCount, iHalfFFTSize);
+						 dims.iProjU, iPaddedDetCount, iHalfFFTSize);
+						 period_f = clock();
+		ifft_time += static_cast<double>(period_f - period_s)/ CLOCKS_PER_SEC * 1000.0;
 
 		if (!ok) break;
 
 		D_sinoData += (dims.iProjAngles * projPitch);
 	}
 
+	printf("<fdk>fft time : %lf[ms]\n",fft_time);
+	printf("<fdk>filtering time : %lf[ms]\n",fil_time);
+	printf("<fdk>ifft time : %lf[ms]\n",ifft_time);
+
 	// [edited]
 	// end measuring time
 	clock_t end = clock();
 	// calc time
 	double time = static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000.0;
-	printf("<fdk>sum time : %lf[ms]\n", time);
+	printf("<fdk>all filtering time : %lf[ms]\n", time);
+
+	/*
 	// calc time of once operation
 	long long int loop = dims.iProjAngles * dims.iProjV;
 	printf("<fdk>loop times : %lld[times]\n", loop);
 	double once = time / (long double)loop;
 	printf("<fdk>once operation's time(ave.) : %lf[ms]\n", once);
+	*/
+
 	// [end edited]
 
 	astraCUDA::freeComplexOnDevice(D_sinoFFT);

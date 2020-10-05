@@ -214,7 +214,7 @@ bool uploadComplexArrayToDevice(int _iProjectionCount, int _iDetectorCount,
 bool runCudaFFT(int _iProjectionCount, const float * _pfDevRealSource,
                 int _iSourcePitch, int _iProjDets,
                 int _iFFTRealDetectorCount, int _iFFTFourierDetectorCount,
-                cufftComplex * _pDevTargetComplex)
+				cufftComplex * _pDevTargetComplex)
 {
 	float * pfDevRealFFTSource = NULL;
 	size_t bufferMemSize = sizeof(float) * _iProjectionCount * _iFFTRealDetectorCount;
@@ -262,8 +262,11 @@ bool runCudaFFT(int _iProjectionCount, const float * _pfDevRealSource,
 		c_sum += (double)milisec;
 	}
 
+	// [edited] output gpu time
+	printf("<fft>,memcpyTime(sum)[msec.],%lf\n",c_sum);
+
 	// [edited] print ave. time
-	printf("<fft>\tMemcpy time(ave.)\tAPI:\t%lf\t[ms]\t/GPU:\t%lf\t[ms]\n", sum / _iProjectionCount, c_sum / _iProjectionCount);
+	// printf("<fft>\tMemcpy time(ave.)\tAPI:\t%lf\t[ms]\t/GPU:\t%lf\t[ms]\n", sum / _iProjectionCount, c_sum / _iProjectionCount);
 	cudaEventDestroy(c_start);
 	cudaEventDestroy(c_stop);
 
