@@ -222,6 +222,8 @@ bool copyFromGPUMemory(float *dst, MemHandle3D src, const SSubDimensions3D &pos)
 
 	cudaError_t err = cudaMemcpy3D(&p);
 
+	printf("size of back imgs : %zu\n",sizeof(dst)/sizeof(dst[0]));
+
 	return err == cudaSuccess;
 
 }

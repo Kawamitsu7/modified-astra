@@ -66,6 +66,10 @@ using namespace astra;
       exit(EXIT_FAILURE);                                                  \
   } } while (0)
 
+// [edited]
+double sum_ret = 0.0;
+double pure_fft = 0.0;
+double prepare_cudamem = 0.0;
 
 namespace astraCUDA {
 
@@ -216,12 +220,6 @@ bool runCudaFFT(int _iProjectionCount, const float * _pfDevRealSource,
                 int _iFFTRealDetectorCount, int _iFFTFourierDetectorCount,
 				cufftComplex * _pDevTargetComplex)
 {
-	float * pfDevRealFFTSource = NULL;
-	size_t bufferMemSize = sizeof(float) * _iProjectionCount * _iFFTRealDetectorCount;
-
-	SAFE_CALL(cudaMalloc((void **)&pfDevRealFFTSource, bufferMemSize));
-	SAFE_CALL(cudaMemset(pfDevRealFFTSource, 0, bufferMemSize));
-
 	// [edited]
 	// get freq of QueryPerformanceCounter()
 	LARGE_INTEGER freq;
@@ -232,13 +230,27 @@ bool runCudaFFT(int _iProjectionCount, const float * _pfDevRealSource,
 	sum = 0.0;
 
 	// GPU time
+	/*
 	cudaEvent_t c_start, c_stop;
 	float milisec = 0.0;
 	double c_sum = 0.0;
 	cudaEventCreate(&c_start);
 	cudaEventCreate(&c_stop);
+	*/
 
 	// [end edited]
+
+	float * pfDevRealFFTSource = NULL;
+	size_t bufferMemSize = sizeof(float) * _iProjectionCount * _iFFTRealDetectorCount;
+
+	// [edited] measure time
+	QueryPerformanceCounter(&start);
+
+	SAFE_CALL(cudaMalloc((void **)&pfDevRealFFTSource, bufferMemSize));
+	SAFE_CALL(cudaMemset(pfDevRealFFTSource, 0, bufferMemSize));
+
+	QueryPerformanceCounter(&end);
+	prepare_cudamem += static_cast<double>(end.QuadPart - start.QuadPart) * 1000.0 / freq.QuadPart;
 
 	for(int iProjectionIndex = 0; iProjectionIndex < _iProjectionCount; iProjectionIndex++)
 	{
@@ -247,31 +259,37 @@ bool runCudaFFT(int _iProjectionCount, const float * _pfDevRealSource,
 
 		// [edited] measure time
 		QueryPerformanceCounter(&start);
-		cudaEventRecord(c_start);
+		//cudaEventRecord(c_start);
 
 		SAFE_CALL(cudaMemcpy(pfTargetLocation, pfSourceLocation, sizeof(float) * _iProjDets, cudaMemcpyDeviceToDevice));
 		
 		// [edited] end measuring time
 		QueryPerformanceCounter(&end);
-		cudaEventRecord(c_stop);
-		cudaEventSynchronize(c_stop);
-		cudaEventElapsedTime(&milisec, c_start, c_stop);
+		//cudaEventRecord(c_stop);
+		//cudaEventSynchronize(c_stop);
+		//cudaEventElapsedTime(&milisec, c_start, c_stop);
 
 		// add time
-		sum += static_cast<double>(end.QuadPart - start.QuadPart) * 1000.0 / freq.QuadPart;
-		c_sum += (double)milisec;
+		sum_ret += static_cast<double>(end.QuadPart - start.QuadPart) * 1000.0 / freq.QuadPart;
+		//c_sum += (double)milisec;
+		// sum_ret += (double)milisec;
 	}
 
 	// [edited] output gpu time
-	printf("<fft>,memcpyTime(sum)[msec.],%lf\n",c_sum);
+	// printf("<fft>,memcpyTime(sum)[msec.],%lf\n",c_sum);
 
 	// [edited] print ave. time
 	// printf("<fft>\tMemcpy time(ave.)\tAPI:\t%lf\t[ms]\t/GPU:\t%lf\t[ms]\n", sum / _iProjectionCount, c_sum / _iProjectionCount);
-	cudaEventDestroy(c_start);
-	cudaEventDestroy(c_stop);
+	//cudaEventDestroy(c_start);
+	//cudaEventDestroy(c_stop);
 
+	// [edited] measure time
+	QueryPerformanceCounter(&start);
 	bool bResult = invokeCudaFFT(_iProjectionCount, _iFFTRealDetectorCount,
-	                             pfDevRealFFTSource, _pDevTargetComplex);
+								 pfDevRealFFTSource, _pDevTargetComplex);
+	QueryPerformanceCounter(&end);
+	pure_fft += static_cast<double>(end.QuadPart - start.QuadPart) * 1000.0 / freq.QuadPart;
+	
 	if(!bResult)
 	{
 		return false;

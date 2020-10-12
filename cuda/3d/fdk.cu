@@ -49,6 +49,11 @@ along with the ASTRA Toolbox. If not, see <http://www.gnu.org/licenses/>.
 // additional include
 #include <time.h>
 
+// [edited]
+extern double sum_ret;
+extern double pure_fft;
+extern double prepare_cudamem;
+
 namespace astraCUDA3d {
 
 static const unsigned int g_anglesPerWeightBlock = 16;
@@ -321,6 +326,10 @@ bool FDK_Filter(cudaPitchedPtr D_projData,
 	printf("<fdk>fft time : %lf[ms]\n",fft_time);
 	printf("<fdk>filtering time : %lf[ms]\n",fil_time);
 	printf("<fdk>ifft time : %lf[ms]\n",ifft_time);
+
+	printf("<fft>prepare cudaMem : %lf[ms]\n", prepare_cudamem);
+	printf("<fft>cudaMemcpy time : %lf[ms]\n",sum_ret);
+	printf("<fft>pure fft time : %lf[ms]\n",pure_fft);
 
 	// [edited]
 	// end measuring time
