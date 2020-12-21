@@ -293,8 +293,12 @@ bool FDK_Filter(cudaPitchedPtr D_projData,
 	bool ok = true;
 
 	// [edited]measure time
-	clock_t start = clock();
+	//[edited] reset var
+	sum_ret = 0, pure_fft = 0, prepare_cudamem = 0;
 	double fft_time = 0,fil_time = 0,ifft_time = 0;	// [edited] add variables
+
+	clock_t start = clock();
+	
 
 	for (int v = 0; v < dims.iProjV; ++v) {
 
@@ -323,6 +327,10 @@ bool FDK_Filter(cudaPitchedPtr D_projData,
 		D_sinoData += (dims.iProjAngles * projPitch);
 	}
 
+	printf("[msec.]");
+	printf("fft, prepare_cudamem_time, cudaMemcpy_time, pure_fft_time, filtering, ifft \n");
+	printf("%lf, %lf, %lf, %lf, %lf, %lf \n", fft_time, prepare_cudamem, sum_ret, pure_fft, fil_time, ifft_time);
+	/*
 	printf("<fdk>fft time : %lf[ms]\n",fft_time);
 	printf("<fdk>filtering time : %lf[ms]\n",fil_time);
 	printf("<fdk>ifft time : %lf[ms]\n",ifft_time);
@@ -330,6 +338,7 @@ bool FDK_Filter(cudaPitchedPtr D_projData,
 	printf("<fft>prepare cudaMem : %lf[ms]\n", prepare_cudamem);
 	printf("<fft>cudaMemcpy time : %lf[ms]\n",sum_ret);
 	printf("<fft>pure fft time : %lf[ms]\n",pure_fft);
+	*/
 
 	// [edited]
 	// end measuring time
